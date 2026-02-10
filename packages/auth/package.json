@@ -1,0 +1,24 @@
+{
+  "name": "@risk-matrix/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@risk-matrix/db": "workspace:*",
+    "@risk-matrix/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@risk-matrix/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
