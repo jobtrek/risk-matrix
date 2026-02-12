@@ -24,8 +24,10 @@ import UserMenu from "@/components/user-menu";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "@tanstack/react-router";
 
+type Session = typeof authClient.$Infer.Session;
+
 export interface RouterAppContext {
-  session?: any;
+  session?: Session | null;
 }
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
