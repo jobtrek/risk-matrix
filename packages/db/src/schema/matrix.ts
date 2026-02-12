@@ -3,6 +3,7 @@ import {
   serial,
   text,
   integer,
+  unique, // Ajout de l'import nécessaire
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -22,17 +23,27 @@ export const cellTypes = pgTable("cell_types", {
   icon: text("icon").notNull(),
 });
 
-export const cellMappings = pgTable("cell_mappings", {
-  id: serial("id").primaryKey(),
-  templateId: integer("template_id")
-    .notNull()
-    .references(() => matrixTemplates.id, { onDelete: "cascade" }),
-  cellTypeId: integer("cell_type_id")
-    .notNull()
-    .references(() => cellTypes.id),
-  x: integer("x").notNull(),
-  y: integer("y").notNull(),
-});
+export const cellMappings = pgTable(
+  "cell_mappings",
+  {
+    id: serial("id").primaryKey(),
+    templateId: integer("template_id")
+      .notNull()
+      .references(() => matrixTemplates.id, { onDelete: "cascade" }),
+    cellTypeId: integer("cell_type_id")
+      .notNull()
+      .references(() => cellTypes.id),
+    x: integer("x").notNull(),
+    y: integer("y").notNull(),
+  },
+  (table) => ({
+    uniqueCoordinates: unique("unique_template_coordinates").on(
+      table.templateId,
+      table.x,
+      table.y
+    ),
+  })
+);
 
 export const matrixTemplatesRelations = relations(
   matrixTemplates,
