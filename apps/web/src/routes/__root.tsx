@@ -19,7 +19,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 
 import "../index.css";
 import { ModeToggle } from "@/components/mode-toggle";
-import UserMenu from "@/components/user-menu";
 
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "@tanstack/react-router";
