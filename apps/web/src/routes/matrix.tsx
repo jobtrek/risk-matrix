@@ -3,10 +3,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils"; // Import important !
+import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/matrix")({ // Attention tu avais mis /matrix
+export const Route = createFileRoute("/matrix")({
   component: PlaygroundComponent,
 });
 
@@ -24,7 +23,7 @@ function PlaygroundComponent() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        {/* LA MATRICE */}
+        
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Aperçu de la Matrice {selectedCell && <span className="text-primary ml-2">({selectedCell.x}, {selectedCell.y})</span>}</CardTitle>
@@ -61,7 +60,6 @@ function PlaygroundComponent() {
           </CardContent>
         </Card>
 
-        {/* LES CONTROLES */}
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
@@ -79,7 +77,7 @@ function PlaygroundComponent() {
                   step={1} 
                   onValueChange={(v) => {
                     setSize(v[0]);
-                    setSelectedCell(null); // On reset la sélection si on change la taille
+                    setSelectedCell(null);
                   }} 
                 />
               </div>
@@ -94,7 +92,6 @@ function PlaygroundComponent() {
                      <div className="p-3 border rounded-md bg-muted/20">
                         <p className="text-sm font-medium mb-2">Cellule sélectionnée : {selectedCell.x}, {selectedCell.y}</p>
                         <div className="grid grid-cols-4 gap-2">
-                          {/* Ici on mettra les boutons de couleurs plus tard */}
                           <div className="h-8 w-full bg-green-500 rounded cursor-pointer border-2 border-transparent hover:border-white" />
                           <div className="h-8 w-full bg-yellow-500 rounded cursor-pointer border-2 border-transparent hover:border-white" />
                           <div className="h-8 w-full bg-orange-500 rounded cursor-pointer border-2 border-transparent hover:border-white" />
