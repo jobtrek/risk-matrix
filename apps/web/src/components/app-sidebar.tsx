@@ -1,4 +1,11 @@
-import { LayoutGrid, PieChart, Folder, Users, Settings, Home } from "lucide-react";
+import {
+  LayoutGrid,
+  PieChart,
+  Folder,
+  Users,
+  Settings,
+  Home,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Link } from "@tanstack/react-router";
 
 const menuItems = [
   { url: "/", title: "Home", icon: Home },
@@ -30,10 +38,10 @@ export function AppSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
