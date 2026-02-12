@@ -1,11 +1,24 @@
-import { HeadContent, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  createRootRouteWithContext,
+  useLocation,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
 import "../index.css";
+import { ModeToggle } from "@/components/mode-toggle";
+import UserMenu from "@/components/user-menu";
 
 export interface RouterAppContext {}
 
@@ -31,6 +44,9 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootComponent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+
   return (
     <>
       <HeadContent />
@@ -40,10 +56,28 @@ function RootComponent() {
         disableTransitionOnChange
         storageKey="vite-ui-theme"
       >
-        <div className="grid grid-rows-[auto_1fr] h-svh">
-          <Header />
-          <Outlet />
-        </div>
+        {isLoginPage ? (
+          // LAYOUT POUR LOGIN (SANS SIDEBAR)
+          <div className="flex min-h-svh items-center justify-center">
+            <Outlet />
+          </div>
+        ) : (
+          // LAYOUT APPLI (AVEC SIDEBAR)
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1" />
+                <div className="h-4 w-px bg-border mx-2" />
+                <ModeToggle />
+                <UserMenu />
+              </header>
+              <div className="flex flex-1 flex-col gap-4 p-4">
+                <Outlet />
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
+        )}
         <Toaster richColors />
       </ThemeProvider>
       <TanStackRouterDevtools position="bottom-left" />
