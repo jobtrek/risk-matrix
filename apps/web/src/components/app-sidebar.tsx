@@ -3,7 +3,6 @@ import {
   PieChart,
   Folder,
   Users,
-  Settings,
   Home,
 } from "lucide-react";
 import {
