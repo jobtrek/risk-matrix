@@ -3,7 +3,7 @@ import {
   serial,
   text,
   integer,
-  unique, // Ajout de l'import nécessaire
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -13,7 +13,7 @@ export const matrixTemplates = pgTable("matrix_templates", {
   size: integer("size").notNull(),
   xTitle: text("x_title").notNull(),
   yTitle: text("y_title").notNull(),
-  projectId: integer("project_id"),
+  projectId: integer("project_id"), 
 });
 
 export const cellTypes = pgTable("cell_types", {
