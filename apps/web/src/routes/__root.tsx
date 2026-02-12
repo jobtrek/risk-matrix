@@ -20,9 +20,25 @@ import "../index.css";
 import { ModeToggle } from "@/components/mode-toggle";
 import UserMenu from "@/components/user-menu";
 
-export interface RouterAppContext {}
+import { authClient } from "@/lib/auth-client";
+import { redirect } from "@tanstack/react-router";
+
+export interface RouterAppContext {
+  session?: any;
+}
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === "/login") return;
+
+    const session = await authClient.getSession();
+    if (!session.data) {
+      throw redirect({
+        to: "/login",
+      });
+    }
+    return { session };
+  },
   component: RootComponent,
   head: () => ({
     meta: [
