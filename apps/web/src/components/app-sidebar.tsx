@@ -1,8 +1,5 @@
 import {
   LayoutGrid,
-  PieChart,
-  Folder,
-  Users,
   Home,
 } from "lucide-react";
 import {
@@ -19,11 +16,7 @@ import { Link } from "@tanstack/react-router";
 
 const menuItems = [
   { url: "/", title: "Home", icon: Home },
-  { url: "/dashboard", title: "Dashboard", icon: LayoutGrid },
-  { url: "/playground", title: "Playground", icon: LayoutGrid },
-  { url: "/lifecycle", title: "Lifecycle", icon: PieChart },
-  { url: "/projects", title: "Projects", icon: Folder },
-  { url: "/team", title: "Team", icon: Users },
+  { url: "/dashboard", title: "Dashboard", icon: LayoutGrid }
 ];
 
 export function AppSidebar() {
