@@ -1,4 +1,11 @@
-import { LayoutGrid, Home, ChevronUp, User2, LogOut, Settings, ShieldCheck } from "lucide-react";
+import {
+  LayoutGrid,
+  Home,
+  ChevronUp,
+  LogOut,
+  Settings,
+  Grid2X2,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +32,7 @@ import { Logo } from "./logo";
 const menuItems = [
   { url: "/", title: "Home", icon: Home },
   { url: "/dashboard", title: "Dashboard", icon: LayoutGrid },
+  { url: "/matrix", title: "Matrix", icon: Grid2X2 },
 ];
 
 export function AppSidebar() {
@@ -40,7 +48,7 @@ export function AppSidebar() {
             <SidebarMenuButton size="lg" asChild>
               <Link to="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Logo className="size-8" /> 
+                  <Logo className="size-8" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Risk Matrix</span>
@@ -84,14 +92,22 @@ export function AppSidebar() {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={session?.user.image || ""} alt={session?.user.name} />
+                    <AvatarImage
+                      src={session?.user.image || ""}
+                      alt={session?.user.name ?? "User avatar"}
+                    />
+
                     <AvatarFallback className="rounded-lg">
-                        {session?.user.name?.slice(0, 1).toUpperCase() || "RM"}
+                      {session?.user.name?.slice(0, 1).toUpperCase() || "RM"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{session?.user.name}</span>
-                    <span className="truncate text-xs">{session?.user.email}</span>
+                    <span className="truncate font-semibold">
+                      {session?.user.name}
+                    </span>
+                    <span className="truncate text-xs">
+                      {session?.user.email}
+                    </span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
