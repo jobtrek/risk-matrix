@@ -38,11 +38,6 @@ type Cell = { x: number; y: number };
 function PlaygroundComponent() {
   const [size, setSize] = useState(5);
 
-  const [axesLabels, setAxesLabels] = useState({
-    x: Array(10).fill("Impact"),
-    y: Array(10).fill("Vraisemblance"),
-  });
-
   const [riskLevels, setRiskLevels] = useState<RiskLevel[]>([
     { id: "1", label: "Ok", color: "bg-green-300", icon: CheckCircle2 },
     {
@@ -139,14 +134,14 @@ function PlaygroundComponent() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            Matrix Playground
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Gérez les axes et les niveaux de risque.
-          </p>
+  Matrix Playground
+</h1>
+<p className="text-muted-foreground text-sm">
+  Manage axes and risk levels.
+</p>
         </div>
         <div className="flex gap-2">
-          <Badge variant="outline">{selectedCells.size} cellules</Badge>
+<Badge variant="outline">{selectedCells.size} cells</Badge>
 
           <button
             onClick={() => {
@@ -155,7 +150,7 @@ function PlaygroundComponent() {
             }}
             className="text-xs text-muted-foreground hover:text-destructive underline"
           >
-            Réinitialiser
+            Reset
           </button>
         </div>
       </div>
@@ -331,7 +326,7 @@ function PlaygroundComponent() {
                   value="settings"
                   className="py-10 text-center text-xs text-muted-foreground"
                 >
-                  Configuration de la matrice...
+                  Matrix configuration...
                 </TabsContent>
               </Tabs>
             </CardContent>
