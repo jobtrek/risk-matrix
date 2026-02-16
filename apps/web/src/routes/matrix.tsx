@@ -8,8 +8,14 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import {
   CheckCircle2,
-  AlertCircle,
   Plus,
   CircleDashed,
   XCircle,
@@ -198,31 +204,45 @@ function PlaygroundComponent() {
                     const cellColor = currentLevel?.color || "bg-background";
 
                     return (
-                      <div
-                        key={cellKey}
-                        onClick={(e) => handleCellClick(x, y, e)}
-                        className={cn(
-                          "flex items-center justify-center transition-all duration-75 cursor-cell text-[10px] font-semibold border-collapse relative",
-                          cellColor,
-                          selected &&
-                            "after:absolute after:inset-0 after:bg-white/20 after:pointer-events-none",
-                          !selected
-                            ? "border border-border/40 hover:bg-accent"
-                            : "",
-                          getBorderClasses(x, y),
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "invert",
-                            selected
-                              ? "text-primary"
-                              : "text-muted-foreground/30",
-                          )}
-                        >
-                          {x},{y}
-                        </span>
-                      </div>
+                      <TooltipProvider key={cellKey}>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <div
+                              onClick={(e) => handleCellClick(x, y, e)}
+                              className={cn(
+                                "flex items-center justify-center transition-all duration-75 cursor-cell text-[10px] font-semibold border-collapse relative",
+                                cellColor,
+                                selected &&
+                                  "after:absolute after:inset-0 after:bg-white/20 after:pointer-events-none",
+                                !selected
+                                  ? "border border-border/40 hover:bg-accent group"
+                                  : "",
+                                getBorderClasses(x, y),
+                              )}
+                            ></div>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="text-[15px] p-2"
+                          >
+                            <div className="flex flex-col gap-1">
+                              <p className="font-bold">
+                                Cell: {x}, {y}
+                              </p>
+                              <p className="flex items-center gap-2">
+                                <span
+                                  className={cn(
+                                    "px-1 rounded text-white",
+                                    currentLevel?.color || "bg-muted",
+                                  )}
+                                >
+                                  {currentLevel?.label || "Non assigné"}
+                                </span>
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     );
                   })}
                 </div>
