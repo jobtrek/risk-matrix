@@ -1,32 +1,81 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import {
+  CheckCircle2,
+  AlertCircle,
+  Plus,
+  CircleDashed,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 
 export const Route = createFileRoute("/matrix")({
   component: PlaygroundComponent,
 });
 
+type RiskLevel = {
+  id: string;
+  label: string;
+  color: string;
+  icon: LucideIcon;
+};
+
 type Cell = { x: number; y: number };
 
 function PlaygroundComponent() {
-  const [matrixData, setMatrixData] = useState<Record<string, string>>({});
+  const [size, setSize] = useState(5);
 
-  const applyColor = (colorClass: string) => {
+  // État pour les labels des axes (Initialisation dynamique selon la taille)
+  const [axesLabels, setAxesLabels] = useState({
+    x: Array(10).fill("Impact"),
+    y: Array(10).fill("Vraisemblance"),
+  });
+
+  const [riskLevels, setRiskLevels] = useState<RiskLevel[]>([
+    { id: "1", label: "Ok", color: "bg-green-300", icon: CheckCircle2 },
+    {
+      id: "2",
+      label: "Acceptable",
+      color: "bg-yellow-300",
+      icon: CircleDashed,
+    },
+    { id: "3", label: "Tolerable", color: "bg-orange-300", icon: CircleDashed },
+    { id: "4", label: "Critical", color: "bg-red-300", icon: CircleDashed },
+    { id: "5", label: "Intolerable", color: "bg-red-900", icon: XCircle },
+  ]);
+
+  const [matrixData, setMatrixData] = useState<Record<string, string>>({});
+  const [selectedCells, setSelectedCells] = useState<Cell[]>([]);
+  const [lastClicked, setLastClicked] = useState<Cell | null>(null);
+
+  // Mise à jour des labels
+  const updateAxisLabel = (axis: "x" | "y", index: number, value: string) => {
+    setAxesLabels((prev) => ({
+      ...prev,
+      [axis]: prev[axis].map((l, i) => (i === index ? value : l)),
+    }));
+  };
+
+  const applyRiskLevel = (levelId: string) => {
     const newData = { ...matrixData };
     selectedCells.forEach((cell) => {
-      newData[`${cell.x}-${cell.y}`] = colorClass;
+      newData[`${cell.x}-${cell.y}`] = levelId;
     });
     setMatrixData(newData);
   };
 
-  const [size, setSize] = useState(5);
-  const [selectedCells, setSelectedCells] = useState<Cell[]>([]);
-  const [lastClicked, setLastClicked] = useState<Cell | null>(null);
+  const updateLevelLabel = (id: string, newLabel: string) => {
+    setRiskLevels((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, label: newLabel } : l)),
+    );
+  };
 
   const handleCellClick = useCallback(
     (x: number, y: number, event: React.MouseEvent) => {
@@ -69,22 +118,21 @@ function PlaygroundComponent() {
   const isSelected = (x: number, y: number) =>
     selectedCells.some((c) => c.x === x && c.y === y);
 
-const getBorderClasses = (x: number, y: number) => {
-  if (!isSelected(x, y)) return "border-border";
+  const getBorderClasses = (x: number, y: number) => {
+    if (!isSelected(x, y)) return "border-border";
+    const hasTop = isSelected(x, y + 1);
+    const hasBottom = isSelected(x, y - 1);
+    const hasLeft = isSelected(x - 1, y);
+    const hasRight = isSelected(x + 1, y);
 
-  const hasTop = isSelected(x, y + 1);
-  const hasBottom = isSelected(x, y - 1);
-  const hasLeft = isSelected(x - 1, y);
-  const hasRight = isSelected(x + 1, y);
-
-  return cn(
-    "border-primary z-20",
-    !hasTop ? "border-t-2" : "border-t-transparent",
-    !hasBottom ? "border-b-2" : "border-b-transparent",
-    !hasLeft ? "border-l-2" : "border-l-transparent",
-    !hasRight ? "border-r-2" : "border-r-transparent",
-  );
-};
+    return cn(
+      "border-primary z-20",
+      !hasTop ? "border-t-2" : "border-t-transparent",
+      !hasBottom ? "border-b-2" : "border-b-transparent",
+      !hasLeft ? "border-l-2" : "border-l-transparent",
+      !hasRight ? "border-r-2" : "border-r-transparent",
+    );
+  };
 
   return (
     <div className="flex flex-col gap-6 select-none">
@@ -94,80 +142,120 @@ const getBorderClasses = (x: number, y: number) => {
             Matrix Playground
           </h1>
           <p className="text-muted-foreground text-sm">
-            Sélection de zone intelligente (Excel Style)
+            Gérez les axes et les niveaux de risque.
           </p>
         </div>
         <div className="flex gap-2">
           <Badge variant="outline">{selectedCells.length} cellules</Badge>
+          <button
+            onClick={() => {
+              setSelectedCells([]);
+              setMatrixData({});
+            }}
+            className="text-xs text-muted-foreground hover:text-destructive underline"
+          >
+            Réinitialiser
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        <Card className="lg:col-span-3">
-          <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="lg:col-span-3 overflow-hidden">
+          <CardHeader>
             <CardTitle>Aperçu de la Matrice</CardTitle>
-           <button
-  onClick={() => {
-    setSelectedCells([]);
-    setMatrixData({});
-  }}
-  className="..."
->
-  Réinitialiser
-</button>
           </CardHeader>
-          <CardContent className="flex aspect-square max-h-[600px] items-center justify-center p-4">
-            <div
-              className="grid w-full h-full border border-border bg-muted/20 shadow-inner overflow-hidden"
-              style={{
-                gridTemplateColumns: `repeat(${size}, 1fr)`,
-                gridTemplateRows: `repeat(${size}, 1fr)`,
-              }}
-            >
-              {Array.from({ length: size * size }).map((_, i) => {
-                const x = (i % size) + 1;
-                const y = size - Math.floor(i / size);
-                const selected = isSelected(x, y);
-                const cellKey = `${x}-${y}`;
-                const cellColor = matrixData[cellKey] || "bg-background";
-
-                return (
-                  <div
-                    key={cellKey}
-                    onClick={(e) => handleCellClick(x, y, e)}
-                    className={cn(
-                      "flex items-center justify-center transition-all duration-75 cursor-cell text-[10px] font-semibold border-collapse",
-                      cellColor,
-                      !selected
-                        ? "border border-border/40 hover:bg-accent hover:z-10"
-                        : "",
-                      getBorderClasses(x, y),
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        selected ? "text-primary" : "text-muted-foreground/50",
-                      )}
-                    >
-                      {x},{y}
-                    </span>
+          <CardContent className="flex items-center justify-center p-12">
+            <div className="relative flex flex-col gap-2">
+              <div className="flex gap-4">
+                <div className="flex">
+                  <div className="h-full flex items-center justify-center w-8">
+                    <Badge className="bg-black text-white px-4 py-0 -translate-y-1/2 -rotate-90">
+                      Vraisemblance
+                    </Badge>
                   </div>
-                );
-              })}
+
+                  <div className="h-full w-4 border-r-2 border-dashed border-muted-foreground/30 mr-1" />
+                </div>
+
+                <div
+                  className="grid border border-border bg-muted/20 shadow-inner overflow-hidden"
+                  style={{
+                    gridTemplateColumns: `repeat(${size}, 1fr)`,
+                    gridTemplateRows: `repeat(${size}, 1fr)`,
+                    width: "500px",
+                    height: "500px",
+                  }}
+                >
+                  {Array.from({ length: size * size }).map((_, i) => {
+                    const x = (i % size) + 1;
+                    const y = size - Math.floor(i / size);
+                    const selected = isSelected(x, y);
+                    const cellKey = `${x}-${y}`;
+                    const levelId = matrixData[cellKey];
+                    const currentLevel = riskLevels.find(
+                      (l) => l.id === levelId,
+                    );
+                    const cellColor = currentLevel?.color || "bg-background";
+
+                    return (
+                      <div
+                        key={cellKey}
+                        onClick={(e) => handleCellClick(x, y, e)}
+                        className={cn(
+                          "flex items-center justify-center transition-all duration-75 cursor-cell text-[10px] font-semibold border-collapse relative",
+                          cellColor,
+                          selected &&
+                            "after:absolute after:inset-0 after:bg-white/20 after:pointer-events-none",
+                          !selected
+                            ? "border border-border/40 hover:bg-accent"
+                            : "",
+                          getBorderClasses(x, y),
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "invert",
+                            selected
+                              ? "text-primary"
+                              : "text-muted-foreground/30",
+                          )}
+                        >
+                          {x},{y}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-2">
+                <div className="w-[500px]">
+                  <div className="w-full h-2 border-t-2 border-dashed border-muted-foreground/30 mb-1" />
+
+                  <div className="flex justify-center mt-2">
+                    <Badge className="bg-black text-white px-4 py-0">
+                      Impact
+                    </Badge>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* SIDEBAR DE CONFIGURATION (Restée identique) */}
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Configuration</CardTitle>
+              <CardTitle>Color Section</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="font-medium">Taille de grille</span>
-                  <span className="text-muted-foreground font-mono">
+                  <span className="font-medium text-muted-foreground">
+                    Grid Size
+                  </span>
+                  <span className="font-mono">
                     {size}x{size}
                   </span>
                 </div>
@@ -182,49 +270,53 @@ const getBorderClasses = (x: number, y: number) => {
                   }}
                 />
               </div>
-
               <Separator />
-
-              <Tabs defaultValue="colors">
+              <Tabs defaultValue="levels">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="colors">Couleurs</TabsTrigger>
-                  <TabsTrigger value="labels">Edition</TabsTrigger>
+                  <TabsTrigger value="levels">Levels</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
-                <TabsContent value="colors" className="py-4 space-y-4">
-                  {selectedCells.length > 0 ? (
-                    <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
-                      <div className="p-3 border rounded-lg bg-accent/50 text-center">
-                        <p className="text-xs font-bold text-accent-foreground uppercase tracking-wider">
-                          Zone active : {selectedCells.length} cases
-                        </p>
+                <TabsContent value="levels" className="pt-4 space-y-2">
+                  <div className="flex items-center gap-3 px-3 py-2 text-muted-foreground opacity-50 cursor-not-allowed">
+                    <Plus className="size-5 border-2 border-dashed rounded-full p-0.5" />
+                    <span className="text-sm">Create</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {riskLevels.map((level) => (
+                      <div
+                        key={level.id}
+                        onClick={() => applyRiskLevel(level.id)}
+                        className={cn(
+                          "group flex items-center gap-3 p-2 border rounded-xl transition-all cursor-pointer hover:bg-accent/50",
+                          selectedCells.length > 0
+                            ? "border-primary/20 ring-1 ring-primary/5"
+                            : "border-transparent",
+                        )}
+                      >
+                        <level.icon className="size-5 text-muted-foreground" />
+                        <Input
+                          value={level.label}
+                          onChange={(e) =>
+                            updateLevelLabel(level.id, e.target.value)
+                          }
+                          className="h-7 border-none bg-transparent p-0 text-sm focus-visible:ring-0 shadow-none font-medium"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <div
+                          className={cn(
+                            "ml-auto size-5 p-2 rounded-sm shadow-sm",
+                            level.color,
+                          )}
+                        />
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => applyColor("bg-green-300")}
-                          className="h-12 w-full bg-green-300/80 hover:bg-green-300 rounded-md border border-black/5 transition-all active:scale-95 shadow-sm"
-                        />
-                        <button
-                          onClick={() => applyColor("bg-yellow-300")}
-                          className="h-12 w-full bg-yellow-300/80 hover:bg-yellow-300 rounded-md border border-black/5 transition-all active:scale-95 shadow-sm"
-                        />
-                        <button
-                          onClick={() => applyColor("bg-orange-300")}
-                          className="h-12 w-full bg-orange-300/80 hover:bg-orange-300 rounded-md border border-black/5 transition-all active:scale-95 shadow-sm"
-                        />
-                        <button
-                          onClick={() => applyColor("bg-red-300")}
-                          className="h-12 w-full bg-red-300/80 hover:bg-red-300 rounded-md border border-black/5 transition-all active:scale-95 shadow-sm"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-10 border-2 border-dashed rounded-xl bg-muted/5">
-                      <p className="text-xs text-muted-foreground px-4">
-                        Sélectionnez une zone sur la matrice pour appliquer une
-                        règle de risque.
-                      </p>
-                    </div>
-                  )}
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent
+                  value="settings"
+                  className="py-10 text-center text-xs text-muted-foreground"
+                >
+                  Configuration de la matrice...
                 </TabsContent>
               </Tabs>
             </CardContent>
