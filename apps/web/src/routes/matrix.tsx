@@ -229,16 +229,24 @@ function PlaygroundComponent() {
                               <p className="font-bold">
                                 Cell: {x}, {y}
                               </p>
+                              {currentLevel?.label && (
+
+                              
                               <p className="flex items-center gap-2">
+                                Risk: 
                                 <span
                                   className={cn(
                                     "px-1 rounded text-white",
                                     currentLevel?.color || "bg-muted",
                                   )}
                                 >
-                                  {currentLevel?.label || "Non assigné"}
+                                  <span className="invert">
+                                  {currentLevel?.label}
+
+                                  </span>
                                 </span>
                               </p>
+                              )}
                             </div>
                           </TooltipContent>
                         </Tooltip>
