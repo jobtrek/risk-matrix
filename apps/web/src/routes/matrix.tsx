@@ -38,7 +38,6 @@ type Cell = { x: number; y: number };
 function PlaygroundComponent() {
   const [size, setSize] = useState(5);
 
-  // État pour les labels des axes (Initialisation dynamique selon la taille)
   const [axesLabels, setAxesLabels] = useState({
     x: Array(10).fill("Impact"),
     y: Array(10).fill("Vraisemblance"),
@@ -58,21 +57,14 @@ function PlaygroundComponent() {
   ]);
 
   const [matrixData, setMatrixData] = useState<Record<string, string>>({});
-  const [selectedCells, setSelectedCells] = useState<Cell[]>([]);
-  const [lastClicked, setLastClicked] = useState<Cell | null>(null);
+  const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
 
-  // Mise à jour des labels
-  const updateAxisLabel = (axis: "x" | "y", index: number, value: string) => {
-    setAxesLabels((prev) => ({
-      ...prev,
-      [axis]: prev[axis].map((l, i) => (i === index ? value : l)),
-    }));
-  };
+  const [lastClicked, setLastClicked] = useState<Cell | null>(null);
 
   const applyRiskLevel = (levelId: string) => {
     const newData = { ...matrixData };
-    selectedCells.forEach((cell) => {
-      newData[`${cell.x}-${cell.y}`] = levelId;
+    selectedCells.forEach((key) => {
+      newData[key] = levelId;
     });
     setMatrixData(newData);
   };
@@ -87,6 +79,7 @@ function PlaygroundComponent() {
     (x: number, y: number, event: React.MouseEvent) => {
       const isCtrl = event.ctrlKey || event.metaKey;
       const isShift = event.shiftKey;
+      const cellKey = `${x}-${y}`;
 
       if (isShift && lastClicked) {
         const minX = Math.min(lastClicked.x, x);
@@ -94,35 +87,36 @@ function PlaygroundComponent() {
         const minY = Math.min(lastClicked.y, y);
         const maxY = Math.max(lastClicked.y, y);
 
-        const newSelection: Cell[] = [];
+        const newSelection = isCtrl
+          ? new Set(selectedCells)
+          : new Set<string>();
         for (let i = minX; i <= maxX; i++) {
           for (let j = minY; j <= maxY; j++) {
-            newSelection.push({ x: i, y: j });
+            newSelection.add(`${i}-${j}`);
           }
         }
-        setSelectedCells(
-          isCtrl ? [...selectedCells, ...newSelection] : newSelection,
-        );
+        setSelectedCells(newSelection);
       } else if (isCtrl) {
-        const exists = selectedCells.some((c) => c.x === x && c.y === y);
-        if (exists) {
-          setSelectedCells(
-            selectedCells.filter((c) => !(c.x === x && c.y === y)),
-          );
+        const next = new Set(selectedCells);
+        if (next.has(cellKey)) {
+          next.delete(cellKey);
         } else {
-          setSelectedCells([...selectedCells, { x, y }]);
+          next.add(cellKey);
         }
+        setSelectedCells(next);
         setLastClicked({ x, y });
       } else {
-        setSelectedCells([{ x, y }]);
+        setSelectedCells(new Set([cellKey]));
         setLastClicked({ x, y });
       }
     },
     [lastClicked, selectedCells],
   );
 
-  const isSelected = (x: number, y: number) =>
-    selectedCells.some((c) => c.x === x && c.y === y);
+  const isSelected = useCallback(
+    (x: number, y: number) => selectedCells.has(`${x}-${y}`),
+    [selectedCells],
+  );
 
   const getBorderClasses = (x: number, y: number) => {
     if (!isSelected(x, y)) return "border-border";
@@ -152,10 +146,11 @@ function PlaygroundComponent() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Badge variant="outline">{selectedCells.length} cellules</Badge>
+          <Badge variant="outline">{selectedCells.size} cellules</Badge>
+
           <button
             onClick={() => {
-              setSelectedCells([]);
+              setSelectedCells(new Set());
               setMatrixData({});
             }}
             className="text-xs text-muted-foreground hover:text-destructive underline"
@@ -167,9 +162,6 @@ function PlaygroundComponent() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         <Card className="lg:col-span-3 overflow-hidden">
-          <CardHeader>
-            <CardTitle>Aperçu de la Matrice</CardTitle>
-          </CardHeader>
           <CardContent className="flex items-center justify-center p-12">
             <div className="relative flex flex-col gap-2">
               <div className="flex gap-4">
@@ -230,22 +222,19 @@ function PlaygroundComponent() {
                                 Cell: {x}, {y}
                               </p>
                               {currentLevel?.label && (
-
-                              
-                              <p className="flex items-center gap-2">
-                                Risk: 
-                                <span
-                                  className={cn(
-                                    "px-1 rounded text-white",
-                                    currentLevel?.color || "bg-muted",
-                                  )}
-                                >
-                                  <span className="invert">
-                                  {currentLevel?.label}
-
+                                <p className="flex items-center gap-2">
+                                  Risk:
+                                  <span
+                                    className={cn(
+                                      "px-1 rounded text-white",
+                                      currentLevel?.color || "bg-muted",
+                                    )}
+                                  >
+                                    <span className="invert">
+                                      {currentLevel?.label}
+                                    </span>
                                   </span>
-                                </span>
-                              </p>
+                                </p>
                               )}
                             </div>
                           </TooltipContent>
@@ -270,8 +259,6 @@ function PlaygroundComponent() {
             </div>
           </CardContent>
         </Card>
-
-        {/* SIDEBAR DE CONFIGURATION (Restée identique) */}
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
