@@ -30,8 +30,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from "./logo";
 
 const menuItems = [
-      { url: "/matrix", title: "Matrix", icon: Grid2X2 },
-  { url: "/dashboard", title: "Dashboard", icon: LayoutGrid }
+  { url: "/matrix", title: "Matrix", icon: Grid2X2 },
+  { url: "/dashboard", title: "Dashboard", icon: LayoutGrid },
 ];
 
 export function AppSidebar() {
