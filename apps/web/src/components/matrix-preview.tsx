@@ -13,6 +13,8 @@ export function MatrixPreview({
   riskLevels = [],
   className,
 }: MatrixPreviewProps) {
+  const riskLevelMap = new Map(riskLevels.map((l) => [l.id, l]));
+
   return (
     <div
       className={cn(
@@ -30,7 +32,7 @@ export function MatrixPreview({
         const cellKey = `${x}-${y}`;
 
         const levelId = data[cellKey];
-        const level = riskLevels.find((l) => l.id === levelId);
+        const level = riskLevelMap.get(levelId);
         const bgColor = level?.color || "bg-transparent";
 
         return (

@@ -10,7 +10,6 @@ function SettingsLayout() {
   const tabs = [
     { name: "Account", href: "/settings/account" },
     { name: "Matrix Templates", href: "/settings/matrix" },
-    { name: "Security", href: "/settings/security" },
   ];
 
   return (

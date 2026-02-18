@@ -63,7 +63,7 @@ function MatrixSettings() {
                   </div>
                 </div>
 
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" disabled>
                   Edit
                 </Button>
               </div>
