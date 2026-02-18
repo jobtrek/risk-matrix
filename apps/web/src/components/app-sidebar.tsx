@@ -116,8 +116,10 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width] min-w-56 rounded-lg"
               >
                 <DropdownMenuItem>
-                  <Settings className="mr-2 size-4" />
-                  <span>Account</span>
+                  <Link to="/settings" className="flex w-full">
+                    <Settings className="mr-2 size-4" />
+                    <span>Account</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
