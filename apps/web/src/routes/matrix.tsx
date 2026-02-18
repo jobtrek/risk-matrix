@@ -21,6 +21,8 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react";
+import { api } from "@/hooks/useMatrix";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/matrix")({
   component: PlaygroundComponent,
@@ -108,6 +110,30 @@ function PlaygroundComponent() {
     [lastClicked, selectedCells],
   );
 
+  const saveMatrix = async () => {
+    const { data, error } = await api.matrix.create.post({
+      name: "Ma Matrice Complète",
+      size: size,
+      xTitle: "Vraisemblance",
+      yTitle: "Impact",
+      riskLevels: riskLevels.map((rl) => ({
+        id: rl.id,
+        label: rl.label,
+        color: rl.color,
+      })),
+
+      matrixData: matrixData,
+    });
+
+    if (error) {
+      toast.error("Failed to save matrix");
+      console.error("Erreur détaillée:", error.value);
+      return;
+    }
+
+    console.log("Tout a été sauvegardé (Template + Levels + Cells) !", data);
+  };
+
   const isSelected = useCallback(
     (x: number, y: number) => selectedCells.has(`${x}-${y}`),
     [selectedCells],
@@ -134,14 +160,14 @@ function PlaygroundComponent() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-  Matrix Playground
-</h1>
-<p className="text-muted-foreground text-sm">
-  Manage axes and risk levels.
-</p>
+            Matrix Playground
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Manage axes and risk levels.
+          </p>
         </div>
         <div className="flex gap-2">
-<Badge variant="outline">{selectedCells.size} cells</Badge>
+          <Badge variant="outline">{selectedCells.size} cells</Badge>
 
           <button
             onClick={() => {
@@ -151,6 +177,13 @@ function PlaygroundComponent() {
             className="text-xs text-muted-foreground hover:text-destructive underline"
           >
             Reset
+          </button>
+
+          <button
+            onClick={saveMatrix}
+            className="w-full py-2 bg-primary text-primary-foreground rounded-md font-bold"
+          >
+            Enregistrer le modèle
           </button>
         </div>
       </div>
@@ -276,7 +309,7 @@ function PlaygroundComponent() {
                   step={1}
                   onValueChange={(v) => {
                     setSize(v[0]);
-                    setSelectedCells([]);
+                    setSelectedCells(new Set());
                   }}
                 />
               </div>
