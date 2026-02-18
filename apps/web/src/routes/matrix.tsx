@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { api } from "@/hooks/useMatrix";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/matrix")({
   component: PlaygroundComponent,
@@ -179,12 +180,9 @@ function PlaygroundComponent() {
             Reset
           </button>
 
-          <button
-            onClick={saveMatrix}
-            className="w-full py-2 bg-primary text-primary-foreground rounded-md font-bold"
-          >
-            Enregistrer le modèle
-          </button>
+         <Button onClick={saveMatrix} size="sm">
+            Save
+          </Button>
         </div>
       </div>
 
