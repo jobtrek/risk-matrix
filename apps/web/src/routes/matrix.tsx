@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { api } from "@/hooks/useMatrix";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/matrix")({
   component: PlaygroundComponent,
@@ -125,6 +126,7 @@ function PlaygroundComponent() {
     });
 
     if (error) {
+      toast.error("Failed to save matrix");
       console.error("Erreur détaillée:", error.value);
       return;
     }
