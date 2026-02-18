@@ -9,14 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MatrixRouteImport } from './routes/matrix'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MatrixsIndexRouteImport } from './routes/matrixs/index'
+import { Route as SettingsAccountRouteImport } from './routes/settings/account'
+import { Route as MatrixsCreateRouteImport } from './routes/matrixs/create'
 
-const MatrixRoute = MatrixRouteImport.update({
-  id: '/matrix',
-  path: '/matrix',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -34,48 +37,96 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatrixsIndexRoute = MatrixsIndexRouteImport.update({
+  id: '/matrixs/',
+  path: '/matrixs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const MatrixsCreateRoute = MatrixsCreateRouteImport.update({
+  id: '/matrixs/create',
+  path: '/matrixs/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/matrix': typeof MatrixRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/matrixs/create': typeof MatrixsCreateRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/matrixs/': typeof MatrixsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/matrix': typeof MatrixRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/matrixs/create': typeof MatrixsCreateRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/matrixs': typeof MatrixsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/matrix': typeof MatrixRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/matrixs/create': typeof MatrixsCreateRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/matrixs/': typeof MatrixsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login' | '/matrix'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/settings'
+    | '/matrixs/create'
+    | '/settings/account'
+    | '/matrixs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/matrix'
-  id: '__root__' | '/' | '/dashboard' | '/login' | '/matrix'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/settings'
+    | '/matrixs/create'
+    | '/settings/account'
+    | '/matrixs'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/settings'
+    | '/matrixs/create'
+    | '/settings/account'
+    | '/matrixs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
-  MatrixRoute: typeof MatrixRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
+  MatrixsCreateRoute: typeof MatrixsCreateRoute
+  MatrixsIndexRoute: typeof MatrixsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/matrix': {
-      id: '/matrix'
-      path: '/matrix'
-      fullPath: '/matrix'
-      preLoaderRoute: typeof MatrixRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -99,14 +150,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/matrixs/': {
+      id: '/matrixs/'
+      path: '/matrixs'
+      fullPath: '/matrixs/'
+      preLoaderRoute: typeof MatrixsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/matrixs/create': {
+      id: '/matrixs/create'
+      path: '/matrixs/create'
+      fullPath: '/matrixs/create'
+      preLoaderRoute: typeof MatrixsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface SettingsRouteChildren {
+  SettingsAccountRoute: typeof SettingsAccountRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsAccountRoute: SettingsAccountRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
-  MatrixRoute: MatrixRoute,
+  SettingsRoute: SettingsRouteWithChildren,
+  MatrixsCreateRoute: MatrixsCreateRoute,
+  MatrixsIndexRoute: MatrixsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

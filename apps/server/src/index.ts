@@ -118,16 +118,24 @@ const app = new Elysia()
               )
               .returning();
 
-            // transforme en tableau itérable
+            // création dictionnaire - trouver l'index (O(1))
+            const riskLevelMap = new Map(
+              body.riskLevels.map((rl, index) => [rl.id, index]),
+            );
+
+            // transforme en tableau
             const cellsToInsert = Object.entries(body.matrixData).map(
               ([key, levelId]) => {
                 // "1-5" => [1, 5] (split transforme string en array)
                 const [x, y] = key.split("-").map(Number);
 
-                // findindex renvoie l'index cherché
-                const typeIndex = body.riskLevels.findIndex(
-                  (rl) => rl.id === levelId,
-                );
+                // (avant: findIndex - trop d'opérations) trouve index risque pour chaque cellule
+                const typeIndex = riskLevelMap.get(levelId);
+
+                // si l'id existe pas (dans le dictionnaire)
+                if (typeIndex === undefined) {
+                  throw new Error(`Niveau de risque invalide : ${levelId}`);
+                }
 
                 return {
                   templateId: template.id,
