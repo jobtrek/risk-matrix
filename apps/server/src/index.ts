@@ -26,8 +26,23 @@ const app = new Elysia()
     }
     return status(405);
   })
+
+  // s'éxécute a chaque apel de route
+  .derive(async ({ request }) => {
+    const session = await auth.api.getSession({ headers: request.headers });
+    return { session };
+  })
+
   .group("/matrix", (app) =>
     app
+      .onBeforeHandle(({ session, set }) => {
+        if (!session) {
+          // set (Elysia) = controle réponses http (set.status, set.headers, set.body...)
+          set.status = 401;
+          return "Unauthorized";
+        }
+      })
+
       .get("/all", async () => {
         const templates = await db.select().from(matrixTemplates);
 
@@ -106,7 +121,6 @@ const app = new Elysia()
             // transforme en tableau itérable
             const cellsToInsert = Object.entries(body.matrixData).map(
               ([key, levelId]) => {
-
                 // "1-5" => [1, 5] (split transforme string en array)
                 const [x, y] = key.split("-").map(Number);
 
