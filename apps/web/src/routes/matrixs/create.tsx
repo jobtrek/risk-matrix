@@ -41,6 +41,11 @@ type Cell = { x: number; y: number };
 function PlaygroundComponent() {
   const [size, setSize] = useState(5);
 
+  const customMatrixName = "Matrix #" + Math.floor(Math.random() * 1000);
+  const [matrixName, setMatrixName] = useState(customMatrixName);
+  const [xAxisTitle, setXAxisTitle] = useState("Probabilité");
+  const [yAxisTitle, setYAxisTitle] = useState("Gravité");
+
   const [riskLevels, setRiskLevels] = useState<RiskLevel[]>([
     { id: "1", label: "Ok", color: "bg-green-300", icon: CheckCircle2 },
     {
@@ -113,10 +118,10 @@ function PlaygroundComponent() {
 
   const saveMatrix = async () => {
     const { data, error } = await api.matrix.create.post({
-      name: "Ma Matrice Complète",
+      name: matrixName,
       size: size,
-      xTitle: "Vraisemblance",
-      yTitle: "Impact",
+      xTitle: xAxisTitle,
+      yTitle: yAxisTitle,
       riskLevels: riskLevels.map((rl) => ({
         id: rl.id,
         label: rl.label,
@@ -160,11 +165,13 @@ function PlaygroundComponent() {
     <div className="flex flex-col gap-6 select-none">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Matrix Playground
-          </h1>
+          <input
+            className="text-2xl font-bold tracking-tight bg-transparent border-b-2 border-transparent focus:border-primary focus:outline-none duration-200 p-0 rounded-none"
+            value={matrixName}
+            onChange={(e) => setMatrixName(e.target.value)}
+          />
           <p className="text-muted-foreground text-sm">
-            Manage axes and risk levels.
+            Change name, size, axis titles and risk levels
           </p>
         </div>
         <div className="flex gap-2">
@@ -180,7 +187,7 @@ function PlaygroundComponent() {
             Reset
           </button>
 
-         <Button onClick={saveMatrix} size="sm">
+          <Button onClick={saveMatrix} size="sm">
             Save
           </Button>
         </div>
@@ -193,9 +200,11 @@ function PlaygroundComponent() {
               <div className="flex gap-4">
                 <div className="flex">
                   <div className="h-full flex items-center justify-center w-8">
-                    <Badge className="bg-black text-white px-4 py-0 -translate-y-1/2 -rotate-90">
-                      Vraisemblance
-                    </Badge>
+                    <input
+                      className="-translate-y-1/2 -rotate-90 bg-black text-white border-none rounded-full px-4 py-0 text-xs focus:outline focus:outline-offset-2 duration-200 text-center"
+                      value={yAxisTitle}
+                      onChange={(e) => setYAxisTitle(e.target.value)}
+                    />
                   </div>
 
                   <div className="h-full w-4 border-r-2 border-dashed border-muted-foreground/30 mr-1" />
@@ -276,9 +285,11 @@ function PlaygroundComponent() {
                   <div className="w-full h-2 border-t-2 border-dashed border-muted-foreground/30 mb-1" />
 
                   <div className="flex justify-center mt-2">
-                    <Badge className="bg-black text-white px-4 py-0">
-                      Impact
-                    </Badge>
+                    <input
+                      className="bg-black text-white border-none rounded-full px-4 py-0 text-xs focus:outline focus:outline-offset-2 duration-200 text-center"
+                      value={xAxisTitle}
+                      onChange={(e) => setXAxisTitle(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
