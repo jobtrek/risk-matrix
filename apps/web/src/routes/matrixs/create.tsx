@@ -25,7 +25,7 @@ import { api } from "@/hooks/useMatrix";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/matrix")({
+export const Route = createFileRoute("/matrixs/create")({
   component: PlaygroundComponent,
 });
 

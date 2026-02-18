@@ -4,7 +4,8 @@ import {
   ChevronUp,
   LogOut,
   Settings,
-  Grid2X2,
+  Plus,
+  List,
 } from "lucide-react";
 import {
   Sidebar,
@@ -29,9 +30,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from "./logo";
 
-const menuItems = [
-  { url: "/matrix", title: "Matrix", icon: Grid2X2 },
+const topItems = [
   { url: "/dashboard", title: "Dashboard", icon: LayoutGrid },
+];
+
+const bottomItems = [
+  { url: "/matrixs", title: "All", icon: List },
+  { url: "/matrixs/create", title: "Create", icon: Plus },
 ];
 
 export function AppSidebar() {
@@ -65,7 +70,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {topItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <Link to={item.url}>
@@ -82,6 +87,24 @@ export function AppSidebar() {
 
       {/* PROFIL EN BAS */}
       <SidebarFooter>
+        <SidebarGroup>
+          <SidebarGroupLabel>Matrixs</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {bottomItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

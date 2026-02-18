@@ -11,7 +11,7 @@ import { api } from "@/hooks/useMatrix";
 import { MatrixPreview } from "@/components/matrix-preview";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/settings/matrix")({
+export const Route = createFileRoute("/matrixs/")({
   loader: async () => {
     const { data, error } = await api.matrix.all.get();
     if (error) throw new Error("Impossible load matrix");
@@ -68,7 +68,7 @@ function MatrixSettings() {
                 </Button>
               </div>
             ))}
-          </div>
+          </div>Dashboard
         </CardContent>
       </Card>
     </div>

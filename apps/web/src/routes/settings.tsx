@@ -9,7 +9,6 @@ export const Route = createFileRoute("/settings")({
 function SettingsLayout() {
   const tabs = [
     { name: "Account", href: "/settings/account" },
-    { name: "Matrix Templates", href: "/settings/matrix" },
   ];
 
   return (
