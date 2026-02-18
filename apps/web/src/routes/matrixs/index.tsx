@@ -68,7 +68,7 @@ function MatrixSettings() {
                 </Button>
               </div>
             ))}
-          </div>Dashboard
+          </div>
         </CardContent>
       </Card>
     </div>
