@@ -89,6 +89,61 @@ const app = new Elysia()
         return fullMatrices;
       })
 
+      .get(
+        "/:id",
+        async ({ params: { id }, set }) => {
+          const template = await db
+            .select()
+            .from(matrixTemplates)
+            .where(eq(matrixTemplates.id, Number(id)))
+            .then((res) => res[0]);
+
+          if (!template) {
+            set.status = 404;
+            return "Matrix not found";
+          }
+
+          const mappings = await db
+            .select({
+              x: cellMappings.x,
+              y: cellMappings.y,
+              color: cellTypes.color,
+              title: cellTypes.title,
+              cellTypeId: cellTypes.id,
+            })
+            .from(cellMappings)
+            .innerJoin(cellTypes, eq(cellMappings.cellTypeId, cellTypes.id))
+            .where(eq(cellMappings.templateId, template.id));
+
+          const cells: Record<string, string> = {};
+          const riskLevelsMap = new Map();
+
+
+          // Transforme les mappings en format ({"x-y": cellTypeId})
+          mappings.forEach((m) => {
+            cells[`${m.x}-${m.y}`] = m.cellTypeId.toString();
+            
+            // Renvoie true si la clé est présente
+            if (!riskLevelsMap.has(m.cellTypeId)) {
+              riskLevelsMap.set(m.cellTypeId, {
+                id: m.cellTypeId.toString(),
+                label: m.title,
+                color: m.color,
+              });
+            }
+          });
+
+          return {
+            ...template,
+            cells,
+            riskLevels: Array.from(riskLevelsMap.values()),
+          };
+        },
+        {
+          params: t.Object({ id: t.String() }),
+        },
+      )
+
       .post(
         "/create",
         async ({ body }) => {
@@ -167,6 +222,96 @@ const app = new Elysia()
                 color: t.String(),
               }),
             ),
+            matrixData: t.Record(t.String(), t.String()),
+          }),
+        },
+      )
+
+      .put(
+        "/:id",
+        async ({ params: { id }, body, set }) => {
+          return await db.transaction(async (tx) => {
+            const templateId = Number(id);
+
+            const [updatedTemplate] = await tx
+              .update(matrixTemplates)
+              .set({
+                name: body.name,
+                size: body.size,
+                xTitle: body.xTitle,
+                yTitle: body.yTitle,
+              })
+              .where(eq(matrixTemplates.id, templateId))
+              .returning();
+
+            if (!updatedTemplate) {
+              set.status = 404;
+              throw new Error("Matrice introuvable");
+            }
+
+            await tx
+              .delete(cellMappings)
+              .where(eq(cellMappings.templateId, templateId));
+
+            const insertedTypes = await tx
+              .insert(cellTypes)
+              .values(
+                body.riskLevels.map((rl) => ({
+                  title: rl.label,
+                  color: rl.color,
+                  icon: "default",
+                })),
+              )
+              .returning();
+
+            const riskLevelMap = new Map(
+              body.riskLevels.map((rl, index) => [rl.id, index]),
+            );
+
+            // transforme en tableau
+            const cellsToInsert = Object.entries(body.matrixData).map(
+              ([key, levelId]) => {
+                const [x, y] = key.split("-").map(Number);
+                const typeIndex = riskLevelMap.get(levelId);
+
+                if (typeIndex === undefined) {
+                  throw new Error(`Niveau de risque invalide : ${levelId}`);
+                }
+
+                return {
+                  templateId: templateId,
+                  cellTypeId: insertedTypes[typeIndex].id,
+                  x,
+                  y,
+                };
+              },
+            );
+
+            if (cellsToInsert.length > 0) {
+              await tx.insert(cellMappings).values(cellsToInsert);
+            }
+
+            return updatedTemplate;
+          });
+        },
+        {
+
+          // validation schema
+          params: t.Object({ id: t.String() }),
+          body: t.Object({
+            name: t.String(),
+            size: t.Number(),
+            xTitle: t.String(),
+            yTitle: t.String(),
+            riskLevels: t.Array(
+              t.Object({
+                id: t.String(),
+                label: t.String(),
+                color: t.String(),
+              }),
+            ),
+
+            // Record = object clé valeur, sert comme dictionnaire (si on ne connait pas les clés a l'avance)
             matrixData: t.Record(t.String(), t.String()),
           }),
         },
