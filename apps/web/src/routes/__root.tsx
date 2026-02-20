@@ -22,6 +22,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "@tanstack/react-router";
+import ErrorPage from "@/components/error-page";
 
 type Session = typeof authClient.$Infer.Session;
 
@@ -41,6 +42,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     }
     return { session };
   },
+  notFoundComponent: () => <ErrorPage />,
   component: RootComponent,
   head: () => ({
     meta: [
