@@ -154,7 +154,7 @@ function CreateMatrixComponent() {
 
     setIsPending(false);
 
-    if (error) {
+    if (error || data === "Unauthorized") {
       toast.error("Failed to create matrix");
       return;
     }
