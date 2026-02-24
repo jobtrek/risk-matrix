@@ -9,93 +9,102 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as MatrixsIndexRouteImport } from './routes/matrixs/index'
-import { Route as SettingsAccountRouteImport } from './routes/settings/account'
-import { Route as MatrixsCreateRouteImport } from './routes/matrixs/create'
-import { Route as MatrixsIdRouteImport } from './routes/matrixs/$id'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedMatrixsIndexRouteImport } from './routes/_authenticated/matrixs/index'
+import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedMatrixsCreateRouteImport } from './routes/_authenticated/matrixs/create'
+import { Route as AuthenticatedMatrixsIdRouteImport } from './routes/_authenticated/matrixs/$id'
 
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const MatrixsIndexRoute = MatrixsIndexRouteImport.update({
-  id: '/matrixs/',
-  path: '/matrixs/',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const SettingsAccountRoute = SettingsAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => SettingsRoute,
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const MatrixsCreateRoute = MatrixsCreateRouteImport.update({
-  id: '/matrixs/create',
-  path: '/matrixs/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MatrixsIdRoute = MatrixsIdRouteImport.update({
+const AuthenticatedMatrixsIndexRoute =
+  AuthenticatedMatrixsIndexRouteImport.update({
+    id: '/matrixs/',
+    path: '/matrixs/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSettingsAccountRoute =
+  AuthenticatedSettingsAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedMatrixsCreateRoute =
+  AuthenticatedMatrixsCreateRouteImport.update({
+    id: '/matrixs/create',
+    path: '/matrixs/create',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedMatrixsIdRoute = AuthenticatedMatrixsIdRouteImport.update({
   id: '/matrixs/$id',
   path: '/matrixs/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/matrixs/$id': typeof MatrixsIdRoute
-  '/matrixs/create': typeof MatrixsCreateRoute
-  '/settings/account': typeof SettingsAccountRoute
-  '/matrixs/': typeof MatrixsIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
+  '/matrixs/$id': typeof AuthenticatedMatrixsIdRoute
+  '/matrixs/create': typeof AuthenticatedMatrixsCreateRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/matrixs/': typeof AuthenticatedMatrixsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/matrixs/$id': typeof MatrixsIdRoute
-  '/matrixs/create': typeof MatrixsCreateRoute
-  '/settings/account': typeof SettingsAccountRoute
-  '/matrixs': typeof MatrixsIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
+  '/matrixs/$id': typeof AuthenticatedMatrixsIdRoute
+  '/matrixs/create': typeof AuthenticatedMatrixsCreateRoute
+  '/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/matrixs': typeof AuthenticatedMatrixsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
-  '/settings': typeof SettingsRouteWithChildren
-  '/matrixs/$id': typeof MatrixsIdRoute
-  '/matrixs/create': typeof MatrixsCreateRoute
-  '/settings/account': typeof SettingsAccountRoute
-  '/matrixs/': typeof MatrixsIndexRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRouteWithChildren
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/matrixs/$id': typeof AuthenticatedMatrixsIdRoute
+  '/_authenticated/matrixs/create': typeof AuthenticatedMatrixsCreateRoute
+  '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
+  '/_authenticated/matrixs/': typeof AuthenticatedMatrixsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
     | '/login'
+    | '/dashboard'
     | '/settings'
     | '/matrixs/$id'
     | '/matrixs/create'
@@ -103,45 +112,34 @@ export interface FileRouteTypes {
     | '/matrixs/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/dashboard'
     | '/login'
+    | '/dashboard'
     | '/settings'
+    | '/'
     | '/matrixs/$id'
     | '/matrixs/create'
     | '/settings/account'
     | '/matrixs'
   id:
     | '__root__'
-    | '/'
-    | '/dashboard'
+    | '/_authenticated'
     | '/login'
-    | '/settings'
-    | '/matrixs/$id'
-    | '/matrixs/create'
-    | '/settings/account'
-    | '/matrixs/'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/settings'
+    | '/_authenticated/'
+    | '/_authenticated/matrixs/$id'
+    | '/_authenticated/matrixs/create'
+    | '/_authenticated/settings/account'
+    | '/_authenticated/matrixs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
-  SettingsRoute: typeof SettingsRouteWithChildren
-  MatrixsIdRoute: typeof MatrixsIdRoute
-  MatrixsCreateRoute: typeof MatrixsCreateRoute
-  MatrixsIndexRoute: typeof MatrixsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -149,71 +147,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/matrixs/': {
-      id: '/matrixs/'
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/matrixs/': {
+      id: '/_authenticated/matrixs/'
       path: '/matrixs'
       fullPath: '/matrixs/'
-      preLoaderRoute: typeof MatrixsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedMatrixsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/settings/account': {
-      id: '/settings/account'
+    '/_authenticated/settings/account': {
+      id: '/_authenticated/settings/account'
       path: '/account'
       fullPath: '/settings/account'
-      preLoaderRoute: typeof SettingsAccountRouteImport
-      parentRoute: typeof SettingsRoute
+      preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
     }
-    '/matrixs/create': {
-      id: '/matrixs/create'
+    '/_authenticated/matrixs/create': {
+      id: '/_authenticated/matrixs/create'
       path: '/matrixs/create'
       fullPath: '/matrixs/create'
-      preLoaderRoute: typeof MatrixsCreateRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedMatrixsCreateRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/matrixs/$id': {
-      id: '/matrixs/$id'
+    '/_authenticated/matrixs/$id': {
+      id: '/_authenticated/matrixs/$id'
       path: '/matrixs/$id'
       fullPath: '/matrixs/$id'
-      preLoaderRoute: typeof MatrixsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedMatrixsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
-interface SettingsRouteChildren {
-  SettingsAccountRoute: typeof SettingsAccountRoute
+interface AuthenticatedSettingsRouteChildren {
+  AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
 }
 
-const SettingsRouteChildren: SettingsRouteChildren = {
-  SettingsAccountRoute: SettingsAccountRoute,
+const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
+  AuthenticatedSettingsAccountRoute: AuthenticatedSettingsAccountRoute,
 }
 
-const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
-  SettingsRouteChildren,
+const AuthenticatedSettingsRouteWithChildren =
+  AuthenticatedSettingsRoute._addFileChildren(
+    AuthenticatedSettingsRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRouteWithChildren
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedMatrixsIdRoute: typeof AuthenticatedMatrixsIdRoute
+  AuthenticatedMatrixsCreateRoute: typeof AuthenticatedMatrixsCreateRoute
+  AuthenticatedMatrixsIndexRoute: typeof AuthenticatedMatrixsIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRouteWithChildren,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedMatrixsIdRoute: AuthenticatedMatrixsIdRoute,
+  AuthenticatedMatrixsCreateRoute: AuthenticatedMatrixsCreateRoute,
+  AuthenticatedMatrixsIndexRoute: AuthenticatedMatrixsIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
-  SettingsRoute: SettingsRouteWithChildren,
-  MatrixsIdRoute: MatrixsIdRoute,
-  MatrixsCreateRoute: MatrixsCreateRoute,
-  MatrixsIndexRoute: MatrixsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

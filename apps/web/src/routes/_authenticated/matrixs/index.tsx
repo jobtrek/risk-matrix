@@ -18,7 +18,7 @@ type MatrixSearch = {
   highlight?: number;
 };
 
-export const Route = createFileRoute("/matrixs/")({
+export const Route = createFileRoute("/_authenticated/matrixs/")({
   validateSearch: (search: Record<string, unknown>): MatrixSearch => {
     // si j'ai un param hl : convertir en number, sinon undefined
     return {

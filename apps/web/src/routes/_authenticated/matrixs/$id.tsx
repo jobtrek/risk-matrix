@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import ErrorPage from "@/components/error-page";
 
-export const Route = createFileRoute("/matrixs/$id")({
+export const Route = createFileRoute("/_authenticated/matrixs/$id")({
   beforeLoad: async ({ params }) => {
     // si le id est pas un number on redirect 404
     if (isNaN(Number(params.id))) {

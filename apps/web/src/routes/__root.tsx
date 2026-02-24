@@ -27,21 +27,10 @@ import ErrorPage from "@/components/error-page";
 type Session = typeof authClient.$Infer.Session;
 
 export interface RouterAppContext {
-  session?: Session | null;
+  bastien: string;
 }
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
-  beforeLoad: async ({ location }) => {
-    if (location.pathname === "/login") return;
-
-    const session = await authClient.getSession();
-    if (!session.data) {
-      throw redirect({
-        to: "/login",
-      });
-    }
-    return { session };
-  },
   notFoundComponent: () => <ErrorPage />,
   component: RootComponent,
   head: () => ({

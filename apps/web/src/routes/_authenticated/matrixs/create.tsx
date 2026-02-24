@@ -10,7 +10,7 @@ import { CheckCircle2, CircleDashed, XCircle } from "lucide-react";
 
 import { MatrixPreview } from "@/components/matrix-preview";
 
-export const Route = createFileRoute("/matrixs/create")({
+export const Route = createFileRoute("/_authenticated/matrixs/create")({
   component: CreateMatrixComponent,
 });
 
@@ -191,7 +191,6 @@ function CreateMatrixComponent() {
           {isPending ? "Création..." : "Créer la matrice"}
         </Button>
       </div>
-
       <div className="bg-muted/50 border rounded-2xl p-8 space-y-8">
         <div className="space-y-4 max-w-xl">
           <div className="flex justify-between items-center">
@@ -232,7 +231,6 @@ function CreateMatrixComponent() {
           </div>
         </div>
       </div>
-
       <div className="space-y-4">
         <h3 className="text-lg font-semibold tracking-tight">
           Modèles par défaut
@@ -271,14 +269,12 @@ function CreateMatrixComponent() {
                     )}
                   </div>
                 </div>
-
                 <MatrixPreview
                   size={template.size}
                   data={template.matrixData}
                   riskLevels={template.riskLevels}
                   className="w-20 h-20 shrink-0 shadow-sm"
                 />
-
                 <div className="flex flex-col justify-center gap-2 flex-1">
                   <p className="font-semibold text-sm mb-1">{template.name}</p>
 
@@ -299,16 +295,15 @@ function CreateMatrixComponent() {
                   {/* Si j'ai plus de 3 rl : */}
                   {template.riskLevels.length > 3 && (
                     // Calule différence (length - 3) pour afficher autres rl
-                    <span className="text-[10px] text-muted-foreground">
-                      +{template.riskLevels.length - 3} autres
-                    </span>
+                    (<span className="text-[10px] text-muted-foreground">+{template.riskLevels.length - 3}autres
+                                          </span>)
                   )}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </div>
     </div>
-  );
+  )
 }
