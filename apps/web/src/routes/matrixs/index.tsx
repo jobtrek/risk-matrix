@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -39,25 +39,28 @@ function MatrixSettings() {
   const data = Route.useLoaderData();
   const { highlight } = Route.useSearch();
 
+  const highlightedRef = useRef<HTMLAnchorElement>(null);
+
   // si hl: scroll vers élém
   useEffect(() => {
-    if (highlight) {
+    if (highlight && highlightedRef.current) {
       const timeoutId = setTimeout(() => {
-        const element = document.getElementById(`matrix-${highlight}`);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "center" });
-        } 
+        highlightedRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
       }, 100);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [highlight]);
-
+  }, [highlight, data]);
 
   // si pas data ou matrix : loading
   if (!data || !data.matrices) return <SpinnerButton />;
 
   const { matrices } = data;
+
+  if (!Array.isArray(matrices)) return <SpinnerButton />;
 
   return (
     <div className="space-y-6">
@@ -74,9 +77,10 @@ function MatrixSettings() {
               const isHighlighted = matrix.id === highlight;
               return (
                 <Link
-                  to={`/matrixs/${matrix.id}`}
+                  to="/matrixs/$id"
+                  params={{ id: String(matrix.id) }}
                   key={matrix.id}
-                  id={`matrix-${matrix.id}`}
+                  ref={isHighlighted ? highlightedRef : null} 
                   className="block"
                 >
                   <div
