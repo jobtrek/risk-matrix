@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/settings/account")({
+export const Route = createFileRoute("/_authenticated/settings/account")({
   component: AccountSettings,
 });
 

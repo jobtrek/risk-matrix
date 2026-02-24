@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsLayout,
 });
 
