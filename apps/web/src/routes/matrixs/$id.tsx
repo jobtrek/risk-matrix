@@ -17,13 +17,14 @@ import * as LucideIcons from "lucide-react";
 import { api } from "@/hooks/useMatrix";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import ErrorPage from "@/components/error-page";
 
 export const Route = createFileRoute("/matrixs/$id")({
   beforeLoad: async ({ params }) => {
     // si le id est pas un number on redirect 404
     if (isNaN(Number(params.id))) {
       toast.error("Invalid matrix ID");
-      throw redirect({ to: "/404" });
+      throw notFound();
     }
   },
 
@@ -35,15 +36,16 @@ export const Route = createFileRoute("/matrixs/$id")({
 
       if (error || !data) {
         toast.error("failed to load matrix data");
-        throw redirect({ to: "/404" });
+        throw notFound();
       }
 
       return { initialData: data };
     } catch (e) {
       toast.error("Failed to fetch matrix data");
-      throw redirect({ to: "/404" });
+      throw notFound();
     }
   },
+  notFoundComponent: () => <ErrorPage />,
 
   component: MatrixEditorComponent,
 });
@@ -61,26 +63,33 @@ function MatrixEditorComponent() {
   const { initialData } = Route.useLoaderData();
   const { id } = Route.useParams();
   const navigate = Route.useNavigate();
+  const matrix = typeof initialData === "string" ? null : initialData;
+
+  if (!matrix) {
+    return <ErrorPage />;
+  }
 
   const [isPending, setIsPending] = useState(false);
 
   // init initialData
-  const [size, setSize] = useState(initialData.size);
-  const [matrixName, setMatrixName] = useState(initialData.name);
-  const [xAxisTitle, setXAxisTitle] = useState(initialData.xTitle);
-  const [yAxisTitle, setYAxisTitle] = useState(initialData.yTitle);
+  const [size, setSize] = useState(matrix.size);
+  const [matrixName, setMatrixName] = useState(matrix.name);
+  const [xAxisTitle, setXAxisTitle] = useState(matrix.xTitle);
+  const [yAxisTitle, setYAxisTitle] = useState(matrix.yTitle);
   const [matrixData, setMatrixData] = useState<Record<string, string>>(
-    initialData.cells,
+    matrix.cells,
   );
 
   const [riskLevels, setRiskLevels] = useState<RiskLevel[]>(() => {
     // Si risklevels on map pour ajouter les icones
-    if (initialData?.riskLevels) {
-      return initialData.riskLevels.map((l: any) => ({
+    if (matrix?.riskLevels) {
+      return matrix.riskLevels.map((l: any) => ({
         ...l,
         icon: (LucideIcons as any)[l.iconName] || LucideIcons.CircleDashed,
       }));
     }
+
+    return [];
   });
 
   // stocke cases cliquées
@@ -232,7 +241,7 @@ function MatrixEditorComponent() {
     setIsPending(false);
 
     if (error) {
-      toast.error("Échec de la sauvegarde");
+      toast.error("Failed to save");
       return;
     }
 
