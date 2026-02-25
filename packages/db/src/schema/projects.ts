@@ -1,11 +1,5 @@
+import { pgTable, integer, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import {
-  integer,
-  pgTable,
-  text,
-  timestamp,
-  varchar,
-} from "drizzle-orm/pg-core";
 
 export const projects = pgTable("projects", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -13,7 +7,7 @@ export const projects = pgTable("projects", {
   description: text("description"),
 });
 
-export const evaluationSessions = pgTable("projects", {
+export const evaluationSessions = pgTable("evaluation_sessions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   projectId: integer("project_id")
     .notNull()
@@ -25,4 +19,11 @@ export const evaluationSessions = pgTable("projects", {
 
 export const projectsRelations = relations(projects, ({ many }) => ({
   sessions: many(evaluationSessions),
+}));
+
+export const evaluationSessionsRelations = relations(evaluationSessions, ({ one }) => ({
+  project: one(projects, {
+    fields: [evaluationSessions.projectId],
+    references: [projects.id],
+  }),
 }));
