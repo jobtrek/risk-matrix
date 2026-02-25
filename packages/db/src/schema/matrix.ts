@@ -23,15 +23,15 @@ export const matrixTemplates = pgTable("matrix_templates", {
 
 export const cellTypes = pgTable("cell_types", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  title: varchar("title", { length: 50}).notNull(),
-  color: char("color", { length: 7}).notNull(),
-  icon: varchar("icon", {length: 50}).notNull(),
+  title: varchar("title", { length: 50 }).notNull(),
+  color: char("color", { length: 7 }).notNull(),
+  icon: varchar("icon", { length: 50 }).notNull(),
 });
 
 export const cellMappings = pgTable(
   "cell_mappings",
   {
-id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     templateId: integer("template_id")
       .notNull()
       .references(() => matrixTemplates.id, { onDelete: "cascade" }),
@@ -44,6 +44,7 @@ id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   (table) => ({
     uniqueCoordinates: unique("unique_template_coordinates").on(
       table.templateId,
+      table.cellTypeId,
       table.x,
       table.y,
     ),
