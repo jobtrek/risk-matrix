@@ -1,32 +1,37 @@
 import {
   pgTable,
-  serial,
   text,
   integer,
   unique,
+  smallint,
+  varchar,
+  char,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { projects } from "./projects";
 
 export const matrixTemplates = pgTable("matrix_templates", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   name: text("name").notNull(),
-  size: integer("size").notNull(),
+  size: smallint("size").notNull(),
   xTitle: text("x_title").notNull(),
   yTitle: text("y_title").notNull(),
-  projectId: integer("project_id"), 
+  projectId: integer("project_id").references(() => projects.id, {
+    onDelete: "cascade",
+  }),
 });
 
 export const cellTypes = pgTable("cell_types", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  color: text("color").notNull(),
-  icon: text("icon").notNull(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  title: varchar("title", { length: 50}).notNull(),
+  color: char("color", { length: 7}).notNull(),
+  icon: varchar("icon", {length: 50}).notNull(),
 });
 
 export const cellMappings = pgTable(
   "cell_mappings",
   {
-    id: serial("id").primaryKey(),
+id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     templateId: integer("template_id")
       .notNull()
       .references(() => matrixTemplates.id, { onDelete: "cascade" }),
@@ -40,9 +45,9 @@ export const cellMappings = pgTable(
     uniqueCoordinates: unique("unique_template_coordinates").on(
       table.templateId,
       table.x,
-      table.y
+      table.y,
     ),
-  })
+  }),
 );
 
 export const matrixTemplatesRelations = relations(
