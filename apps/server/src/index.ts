@@ -13,6 +13,7 @@ import { projects } from "@risk-matrix/db/schema/projects";
 import {
   insertMatrixSchema,
   insertProjectSchema,
+  updateMatrixSchema,
 } from "@risk-matrix/db/validation";
 
 // Vérification + formatage ("1-5" => [1, 5])
@@ -363,7 +364,7 @@ const app = new Elysia()
         {
           // validation schema
           params: t.Object({ id: t.String() }),
-          body: insertMatrixSchema,
+          body: updateMatrixSchema,
         },
       ),
   )

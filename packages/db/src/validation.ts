@@ -23,5 +23,10 @@ export const insertMatrixSchema = z.object({
   matrixData: z.record(z.string(), z.string()), 
 });
 
+export const updateMatrixSchema = insertMatrixSchema.extend({
+  projectId: z.number().optional(),
+});
+
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type InsertMatrix = z.infer<typeof insertMatrixSchema>;
+export type UpdateMatrix = z.infer<typeof updateMatrixSchema>;

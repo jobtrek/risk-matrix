@@ -90,7 +90,7 @@ function CreateProjectComponent() {
     <div className="w-full max-w-2xl mx-auto space-y-6 pt-6">
       <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
         <ArrowLeft size={16} />
-        <Link to="/pojects">Retour aux matrices</Link>
+        <Link to="/projects">Retour aux matrices</Link>
       </div>
 
       <Card className="border-2 shadow-sm">
@@ -168,7 +168,7 @@ function CreateProjectComponent() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate({ to: "/matrixs" })}
+                onClick={() => navigate({ to: "/projects" })}
                 disabled={isPending}
               >
                 Annuler
