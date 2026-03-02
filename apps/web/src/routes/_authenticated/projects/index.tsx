@@ -47,19 +47,13 @@ export const Route = createFileRoute("/_authenticated/projects/")({
       grouped[p.id.toString()] = { name: p.name, matrices: [] };
     });
 
-    grouped["unassigned"] = { name: "---", matrices: [], isDefault: true };
+    grouped["unassigned"] = { name: "Matrices hors projet", matrices: [], isDefault: true };
 
     matrices.forEach((m) => {
       const key = m.projectId ? m.projectId.toString() : "unassigned";
       if (grouped[key]) {
         grouped[key].matrices.push(m);
       } else {
-        if (!grouped["unassigned"])
-          grouped["unassigned"] = {
-            name: "Matrices hors projet",
-            matrices: [],
-            isDefault: true,
-          };
         grouped["unassigned"].matrices.push(m);
       }
     });

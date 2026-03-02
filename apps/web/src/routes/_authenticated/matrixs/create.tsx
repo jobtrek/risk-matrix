@@ -214,10 +214,9 @@ function CreateMatrixComponent() {
     const { data, error } = await api.matrix.create.post(validation.data);
     setIsPending(false);
 
-    if (error) {
+if (error) {
       toast.error(
-        "Échec de la création : " + (error.value as any)?.message ||
-          "Erreur serveur",
+        `Échec de la création : ${(error.value as any)?.message || "Erreur serveur"}`,
       );
       return;
     }

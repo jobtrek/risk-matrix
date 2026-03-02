@@ -83,14 +83,14 @@ function CreateProjectComponent() {
     }
 
     toast.success(`Projet "${data.name}" créé avec succès !`);
-    navigate({ to: "/projects", search: { highlight: data.id } });
+    navigate({ to: "/projects", search: { highlight: (data as any).id } });
   };
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 pt-6">
       <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
         <ArrowLeft size={16} />
-        <Link to="/projects">Retour aux matrices</Link>
+        <Link to="/projects">Retour aux projets</Link>
       </div>
 
       <Card className="border-2 shadow-sm">

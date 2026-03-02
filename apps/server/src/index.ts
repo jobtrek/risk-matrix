@@ -55,6 +55,13 @@ const app = new Elysia()
 
   .group("/projects", (app) =>
     app
+      .onBeforeHandle(({ session, set }) => {
+        if (!session) {
+          set.status = 401;
+          return "Unauthorized";
+        }
+      })
+
       .get("/", async () => {
         return await db.select().from(projects);
       })
