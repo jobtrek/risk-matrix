@@ -35,12 +35,12 @@ import { Logo } from "./logo";
 const topItems = [{ url: "/dashboard", title: "Dashboard", icon: LayoutGrid }];
 
 const bottomItems = [
-  { url: "/matrixs/create", title: "Create matrix", icon: PlusSquare },
+  { url: "/matrixs/create", title: "Créer une matrice", icon: PlusSquare },
 ];
 
 const projectsItems = [
-  { url: "/projects", title: "All projects", icon: List },
-  { url: "/projects/create", title: "Create project", icon: FolderPlusIcon },
+  { url: "/projects", title: "Projets", icon: List },
+  { url: "/projects/create", title: "Créer un projet", icon: FolderPlusIcon },
 ];
 
 export function AppSidebar() {
@@ -88,7 +88,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarGroupLabel>Projets</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {projectsItems.map((item) => (
@@ -109,7 +109,7 @@ export function AppSidebar() {
       {/* PROFIL EN BAS */}
       <SidebarFooter>
         <SidebarGroup>
-          <SidebarGroupLabel>Matrixs</SidebarGroupLabel>
+          <SidebarGroupLabel>Matrices</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {bottomItems.map((item) => (
