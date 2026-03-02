@@ -247,7 +247,7 @@ function MatrixEditorComponent() {
 
     // renvoie vers list avec id pour faire higlight et message de succès
     toast.success(`${matrixName} mise à jour !`);
-    navigate({ to: "/matrixs", search: { highlight: Number(id) } });
+    navigate({ to: "/projects", search: { highlight: Number(id) } });
   };
 
   return (
