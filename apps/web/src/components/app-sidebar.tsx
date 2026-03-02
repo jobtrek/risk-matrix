@@ -6,6 +6,8 @@ import {
   Settings,
   Plus,
   List,
+  PlusSquare,
+  FolderPlusIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,13 +32,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from "./logo";
 
-const topItems = [
-  { url: "/dashboard", title: "Dashboard", icon: LayoutGrid },
-];
+const topItems = [{ url: "/dashboard", title: "Dashboard", icon: LayoutGrid }];
 
 const bottomItems = [
-  { url: "/matrixs", title: "All", icon: List },
-  { url: "/matrixs/create", title: "Create", icon: Plus },
+  { url: "/matrixs/create", title: "Create matrix", icon: PlusSquare },
+];
+
+const projectsItems = [
+  { url: "/projects", title: "All projects", icon: List },
+  { url: "/projects/create", title: "Create project", icon: FolderPlusIcon },
 ];
 
 export function AppSidebar() {
@@ -71,6 +75,23 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {topItems.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {projectsItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <Link to={item.url}>

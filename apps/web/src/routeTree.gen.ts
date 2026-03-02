@@ -14,8 +14,9 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedMatrixsIndexRouteImport } from './routes/_authenticated/matrixs/index'
+import { Route as AuthenticatedProjectsIndexRouteImport } from './routes/_authenticated/projects/index'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedProjectsCreateRouteImport } from './routes/_authenticated/projects/create'
 import { Route as AuthenticatedMatrixsCreateRouteImport } from './routes/_authenticated/matrixs/create'
 import { Route as AuthenticatedMatrixsIdRouteImport } from './routes/_authenticated/matrixs/$id'
 
@@ -43,10 +44,10 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedMatrixsIndexRoute =
-  AuthenticatedMatrixsIndexRouteImport.update({
-    id: '/matrixs/',
-    path: '/matrixs/',
+const AuthenticatedProjectsIndexRoute =
+  AuthenticatedProjectsIndexRouteImport.update({
+    id: '/projects/',
+    path: '/projects/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedSettingsAccountRoute =
@@ -54,6 +55,12 @@ const AuthenticatedSettingsAccountRoute =
     id: '/account',
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedProjectsCreateRoute =
+  AuthenticatedProjectsCreateRouteImport.update({
+    id: '/projects/create',
+    path: '/projects/create',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedMatrixsCreateRoute =
   AuthenticatedMatrixsCreateRouteImport.update({
@@ -74,8 +81,9 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRouteWithChildren
   '/matrixs/$id': typeof AuthenticatedMatrixsIdRoute
   '/matrixs/create': typeof AuthenticatedMatrixsCreateRoute
+  '/projects/create': typeof AuthenticatedProjectsCreateRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/matrixs/': typeof AuthenticatedMatrixsIndexRoute
+  '/projects/': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -84,8 +92,9 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/matrixs/$id': typeof AuthenticatedMatrixsIdRoute
   '/matrixs/create': typeof AuthenticatedMatrixsCreateRoute
+  '/projects/create': typeof AuthenticatedProjectsCreateRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/matrixs': typeof AuthenticatedMatrixsIndexRoute
+  '/projects': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,8 +105,9 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/matrixs/$id': typeof AuthenticatedMatrixsIdRoute
   '/_authenticated/matrixs/create': typeof AuthenticatedMatrixsCreateRoute
+  '/_authenticated/projects/create': typeof AuthenticatedProjectsCreateRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
-  '/_authenticated/matrixs/': typeof AuthenticatedMatrixsIndexRoute
+  '/_authenticated/projects/': typeof AuthenticatedProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,8 +118,9 @@ export interface FileRouteTypes {
     | '/settings'
     | '/matrixs/$id'
     | '/matrixs/create'
+    | '/projects/create'
     | '/settings/account'
-    | '/matrixs/'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -118,8 +129,9 @@ export interface FileRouteTypes {
     | '/'
     | '/matrixs/$id'
     | '/matrixs/create'
+    | '/projects/create'
     | '/settings/account'
-    | '/matrixs'
+    | '/projects'
   id:
     | '__root__'
     | '/_authenticated'
@@ -129,8 +141,9 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/matrixs/$id'
     | '/_authenticated/matrixs/create'
+    | '/_authenticated/projects/create'
     | '/_authenticated/settings/account'
-    | '/_authenticated/matrixs/'
+    | '/_authenticated/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -175,11 +188,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/matrixs/': {
-      id: '/_authenticated/matrixs/'
-      path: '/matrixs'
-      fullPath: '/matrixs/'
-      preLoaderRoute: typeof AuthenticatedMatrixsIndexRouteImport
+    '/_authenticated/projects/': {
+      id: '/_authenticated/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof AuthenticatedProjectsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/settings/account': {
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/account'
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/projects/create': {
+      id: '/_authenticated/projects/create'
+      path: '/projects/create'
+      fullPath: '/projects/create'
+      preLoaderRoute: typeof AuthenticatedProjectsCreateRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/matrixs/create': {
       id: '/_authenticated/matrixs/create'
@@ -225,7 +245,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedMatrixsIdRoute: typeof AuthenticatedMatrixsIdRoute
   AuthenticatedMatrixsCreateRoute: typeof AuthenticatedMatrixsCreateRoute
-  AuthenticatedMatrixsIndexRoute: typeof AuthenticatedMatrixsIndexRoute
+  AuthenticatedProjectsCreateRoute: typeof AuthenticatedProjectsCreateRoute
+  AuthenticatedProjectsIndexRoute: typeof AuthenticatedProjectsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -234,7 +255,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedMatrixsIdRoute: AuthenticatedMatrixsIdRoute,
   AuthenticatedMatrixsCreateRoute: AuthenticatedMatrixsCreateRoute,
-  AuthenticatedMatrixsIndexRoute: AuthenticatedMatrixsIndexRoute,
+  AuthenticatedProjectsCreateRoute: AuthenticatedProjectsCreateRoute,
+  AuthenticatedProjectsIndexRoute: AuthenticatedProjectsIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
