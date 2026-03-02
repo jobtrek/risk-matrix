@@ -9,6 +9,11 @@ import {
   cellTypes,
 } from "@risk-matrix/db/schema/matrix";
 import { Elysia, t } from "elysia";
+import { projects } from "@risk-matrix/db/schema/projects";
+import {
+  insertMatrixSchema,
+  insertProjectSchema,
+} from "@risk-matrix/db/validation";
 
 // Vérification + formatage ("1-5" => [1, 5])
 const parseCellKey = (key: string): [number, number] => {
@@ -46,6 +51,28 @@ const app = new Elysia()
     const session = await auth.api.getSession({ headers: request.headers });
     return { session };
   })
+
+  .group("/projects", (app) =>
+    app
+      .get("/", async () => {
+        return await db.select().from(projects);
+      })
+      .post(
+        "/",
+        async ({ body }) => {
+          return await db
+            .insert(projects)
+            // body est déja typé et validé (par insertProjectSchema)
+            .values(body)
+            .returning()
+            .then((res) => res[0]);
+        },
+        {
+          // Validation par insertProjectSchema
+          body: insertProjectSchema,
+        },
+      ),
+  )
 
   .group("/matrix", (app) =>
     app
@@ -171,6 +198,7 @@ const app = new Elysia()
                 size: body.size,
                 xTitle: body.xTitle,
                 yTitle: body.yTitle,
+                projectId: body.projectId,
               })
 
               // renvoie l'objet template (on sait que c réussi)
@@ -236,20 +264,7 @@ const app = new Elysia()
         },
         // schema validation (t = TypeBox - natif a Elysia)
         {
-          body: t.Object({
-            name: t.String(),
-            size: t.Number(),
-            xTitle: t.String(),
-            yTitle: t.String(),
-            riskLevels: t.Array(
-              t.Object({
-                id: t.String(),
-                label: t.String(),
-                color: t.String(),
-              }),
-            ),
-            matrixData: t.Record(t.String(), t.String()),
-          }),
+          body: insertMatrixSchema,
         },
       )
 
@@ -348,22 +363,7 @@ const app = new Elysia()
         {
           // validation schema
           params: t.Object({ id: t.String() }),
-          body: t.Object({
-            name: t.String(),
-            size: t.Number(),
-            xTitle: t.String(),
-            yTitle: t.String(),
-            riskLevels: t.Array(
-              t.Object({
-                id: t.String(),
-                label: t.String(),
-                color: t.String(),
-              }),
-            ),
-
-            // Record = object clé valeur, sert comme dictionnaire (si on ne connait pas les clés a l'avance)
-            matrixData: t.Record(t.String(), t.String()),
-          }),
+          body: insertMatrixSchema,
         },
       ),
   )
