@@ -35,6 +35,7 @@
   "dependencies": {
     "@risk-matrix/env": "workspace:*",
     "dotenv": "catalog:",
+    "drizzle-typebox": "^0.3.3",
     "zod": "catalog:"
   },
   "devDependencies": {
