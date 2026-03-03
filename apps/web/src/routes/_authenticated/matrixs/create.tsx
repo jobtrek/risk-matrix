@@ -214,7 +214,7 @@ function CreateMatrixComponent() {
     const { data, error } = await api.matrix.create.post(validation.data);
     setIsPending(false);
 
-if (error) {
+    if (error) {
       toast.error(
         `Échec de la création : ${(error.value as any)?.message || "Erreur serveur"}`,
       );
@@ -291,11 +291,12 @@ if (error) {
               <option value="" disabled>
                 Sélectionner un projet...
               </option>
-              {projectsList?.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
+              {Array.isArray(projectsList) &&
+                projectsList.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
             </select>
             {fieldErrors.projectId && (
               <p className="text-[0.8rem] font-medium text-destructive">

@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/projects/")({
     }
 
     const matrices = Array.isArray(matrixRes.data) ? matrixRes.data : [];
-    const projects = projectRes.data || [];
+    const projects = Array.isArray(projectRes.data) ? projectRes.data : [];
 
     const grouped: Record<
       string,
@@ -60,10 +60,10 @@ export const Route = createFileRoute("/_authenticated/projects/")({
 
     return { groupedMatrices: grouped };
   },
-  component: MatrixSettings,
+  component: ProjectList,
 });
 
-function MatrixSettings() {
+function ProjectList() {
   const { groupedMatrices } = Route.useLoaderData();
   const { highlight } = Route.useSearch();
   const highlightedRef = useRef<HTMLAnchorElement>(null);
@@ -93,10 +93,10 @@ function MatrixSettings() {
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-bold tracking-tight">
-            Bibliothèque de Matrices
+            Mes projets
           </h1>
           <p className="text-muted-foreground text-sm">
-            Gérez vos modèles de risques par projet.
+            Gérez vos matrices et projets.
           </p>
         </div>
         <div className="flex gap-2">
