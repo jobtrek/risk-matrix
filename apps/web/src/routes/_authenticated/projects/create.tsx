@@ -14,7 +14,11 @@ import { toast } from "sonner";
 import { api } from "@/hooks/useMatrix";
 import { FolderPlus, ArrowLeft, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { insertProjectSchema } from "@risk-matrix/db/validation";
+import {
+  insertProjectSchema,
+  type InsertProject,
+} from "@risk-matrix/db/validation";
+import { useForm } from "@tanstack/react-form";
 
 export const Route = createFileRoute("/_authenticated/projects/create")({
   component: CreateProjectComponent,
@@ -23,68 +27,35 @@ export const Route = createFileRoute("/_authenticated/projects/create")({
 function CreateProjectComponent() {
   const navigate = Route.useNavigate();
   const [isPending, setIsPending] = useState(false);
-  const [isValid, setIsValid] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
+  const form = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+    } as InsertProject,
+    validators: {
+      onChange: insertProjectSchema as any,
+    },
+    onSubmit: async ({ value }) => {
+      setIsPending(true);
+      const payload = {
+        ...value,
+        description: value.description?.trim() ? value.description : null,
+      };
+      const { data, error } = await api.projects.post(payload);
+      setIsPending(false);
+
+      if (error || typeof data === "string") {
+        toast.error(
+          `Erreur: ${typeof data === "string" ? data : "Problème serveur"}`,
+        );
+        return;
+      }
+
+      toast.success(`Projet "${data.name}" créé avec succès !`);
+      navigate({ to: "/projects", search: { highlight: data.id } });
+    },
   });
-
-  const [fieldErrors, setFieldErrors] = useState<{
-    name?: string;
-    description?: string;
-  }>({});
-
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    const newFormData = { ...formData, [field]: value };
-    setFormData(newFormData);
-
-    const result = insertProjectSchema.safeParse(newFormData);
-
-    setIsValid(result.success);
-
-    if (result.success) {
-      setFieldErrors({});
-    } else {
-      const errors = result.error.flatten().fieldErrors;
-      setFieldErrors({
-        ...fieldErrors,
-        [field]: errors[field]?.[0],
-      });
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validation finale avant envoi
-    const validation = insertProjectSchema.safeParse(formData);
-
-    if (!validation.success) {
-      const errors = validation.error.flatten().fieldErrors;
-      setFieldErrors({
-        name: errors.name?.[0],
-        description: errors.description?.[0],
-      });
-      toast.error("Veuillez corriger les erreurs");
-      return;
-    }
-
-    setIsPending(true);
-    const { data, error } = await api.projects.post(validation.data);
-    setIsPending(false);
-
-    if (error) {
-      toast.error(
-        "Erreur lors de la création du projet (" + error.status + ")",
-      );
-      console.error("Détails de l'erreur :", error.value);
-      return;
-    }
-
-    toast.success(`Projet "${data.name}" créé avec succès !`);
-    navigate({ to: "/projects", search: { highlight: (data as any).id } });
-  };
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 pt-6">
@@ -108,63 +79,89 @@ function CreateProjectComponent() {
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+            className="space-y-4"
+          >
+            {" "}
             {/* CHAMP NOM */}
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Nom du projet
-              </label>
-              <Input
-                id="name"
-                placeholder="ex: Audit Interne 2024"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                disabled={isPending}
-                className={cn(
-                  fieldErrors.name &&
-                    "border-destructive focus-visible:ring-destructive focus-visible:ring-1",
-                )}
-              />
-              {/* Le petit texte rouge qui s'affiche si erreur */}
-              {fieldErrors.name && (
-                <p className="text-[0.8rem] font-medium text-destructive animate-in fade-in slide-in-from-top-1">
-                  {fieldErrors.name}
-                </p>
+            <form.Field
+              name="name"
+              children={(field) => (
+                <div className="space-y-2">
+                  <label htmlFor={field.name} className="text-sm font-medium">
+                    Nom du projet
+                  </label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="ex: Audit Interne 2024"
+                    disabled={isPending}
+                    className={cn(
+                      field.state.meta.errors.length > 0 &&
+                        "border-destructive focus-visible:ring-destructive focus-visible:ring-1",
+                    )}
+                  />
+                  {field.state.meta.errors.length > 0 && (
+                    <p className="text-[0.8rem] font-medium text-destructive">
+                      {String(
+                        (field.state.meta.errors[0] as any)?.message ??
+                          field.state.meta.errors[0] ??
+                          "",
+                      )}
+                    </p>
+                  )}
+                </div>
               )}
-            </div>
-
+            />
             {/* CHAMP DESCRIPTION */}
-            <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium">
-                Description (optionnel)
-              </label>
-              <Textarea
-                id="description"
-                placeholder="Décrivez l'objectif de ce projet..."
-                className="resize-none h-32"
-                value={formData.description}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
-                disabled={isPending}
-              />
-            </div>
-
+            <form.Field
+              name="description"
+              children={(field) => (
+                <div className="space-y-2">
+                  <label htmlFor={field.name} className="text-sm font-medium">
+                    Description (optionnel)
+                  </label>
+                  <Textarea
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value ?? ""}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="Décrivez l'objectif de ce projet..."
+                    className="resize-none h-32"
+                    disabled={isPending}
+                  />
+                </div>
+              )}
+            />
             <div className="pt-4 flex gap-3">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={isPending || !isValid}
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Création...
-                  </>
-                ) : (
-                  "Créer le projet"
+              <form.Subscribe
+                selector={(state) => [state.canSubmit, state.isSubmitting]}
+                children={([canSubmit, isSubmitting]) => (
+                  <Button
+                    type="submit"
+                    className="flex-1"
+                    disabled={!canSubmit || isSubmitting || isPending}
+                  >
+                    {isPending || isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Création...
+                      </>
+                    ) : (
+                      "Créer le projet"
+                    )}
+                  </Button>
                 )}
-              </Button>
+              />
               <Button
                 type="button"
                 variant="outline"
