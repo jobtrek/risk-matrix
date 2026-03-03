@@ -51,7 +51,7 @@ export const Route = createFileRoute("/_authenticated/matrixs/$id")({
 });
 
 type RiskLevel = {
-  id: string;
+  id: number;
   label: string;
   color: string;
   icon: LucideIcons.LucideIcon;
@@ -76,8 +76,10 @@ function MatrixEditorComponent() {
   const [matrixName, setMatrixName] = useState(matrix.name);
   const [xAxisTitle, setXAxisTitle] = useState(matrix.xTitle);
   const [yAxisTitle, setYAxisTitle] = useState(matrix.yTitle);
-  const [matrixData, setMatrixData] = useState<Record<string, string>>(
-    matrix.cells,
+  const [matrixData, setMatrixData] = useState<Record<string, number>>(
+    Object.fromEntries(
+      Object.entries(matrix.cells).map(([key, value]) => [key, Number(value)]),
+    ),
   );
 
   const [riskLevels, setRiskLevels] = useState<RiskLevel[]>(() => {
@@ -104,7 +106,7 @@ function MatrixEditorComponent() {
   const [newLevelColor, setNewLevelColor] = useState("bg-green-300");
 
   // peint les cases sélectionnées
-  const applyRiskLevel = (levelId: string) => {
+  const applyRiskLevel = (levelId: number) => {
     const newData = { ...matrixData };
     selectedCells.forEach((key) => {
       newData[key] = levelId;
@@ -115,7 +117,7 @@ function MatrixEditorComponent() {
   };
 
   // renomme le label
-  const updateLevelLabel = (id: string, newLabel: string) => {
+  const updateLevelLabel = (id: number, newLabel: string) => {
     // prends les anciens niveaux de risque (prev) et ajoute le nouveau label (grace a l'id)
     setRiskLevels((prev) =>
       prev.map((l) => (l.id === id ? { ...l, label: newLabel } : l)),
@@ -235,7 +237,9 @@ function MatrixEditorComponent() {
         label: rl.label,
         color: rl.color,
       })),
-      matrixData: matrixData,
+      matrixData: Object.fromEntries(
+        Object.entries(matrixData).map(([key, value]) => [key, String(value)]),
+      ),
     });
 
     setIsPending(false);
@@ -247,7 +251,7 @@ function MatrixEditorComponent() {
 
     // renvoie vers list avec id pour faire higlight et message de succès
     toast.success(`${matrixName} mise à jour !`);
-    navigate({ to: "/matrixs", search: { highlight: Number(id) } });
+    navigate({ to: "/projects", search: { highlight: Number(id) } });
   };
 
   return (
@@ -441,7 +445,11 @@ function MatrixEditorComponent() {
                           setRiskLevels([
                             ...riskLevels,
                             {
-                              id: Math.random().toString(36).substr(2, 9),
+                              id:
+                                Math.min(
+                                  0,
+                                  ...riskLevels.map((rl) => Number(rl.id)),
+                                ) - 1,
                               label: input.value,
                               color: newLevelColor,
                               icon: LucideIcons.CircleDashed,

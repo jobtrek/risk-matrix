@@ -9,6 +9,12 @@ import {
   cellTypes,
 } from "@risk-matrix/db/schema/matrix";
 import { Elysia, t } from "elysia";
+import { projects } from "@risk-matrix/db/schema/projects";
+import {
+  insertMatrixSchema,
+  insertProjectSchema,
+  updateMatrixSchema,
+} from "@risk-matrix/db/validation";
 
 // Vérification + formatage ("1-5" => [1, 5])
 const parseCellKey = (key: string): [number, number] => {
@@ -46,6 +52,35 @@ const app = new Elysia()
     const session = await auth.api.getSession({ headers: request.headers });
     return { session };
   })
+
+  .group("/projects", (app) =>
+    app
+      .onBeforeHandle(({ session, set }) => {
+        if (!session) {
+          set.status = 401;
+          return "Unauthorized";
+        }
+      })
+
+      .get("/", async () => {
+        return await db.select().from(projects);
+      })
+      .post(
+        "/",
+        async ({ body }) => {
+          return await db
+            .insert(projects)
+            // body est déja typé et validé (par insertProjectSchema)
+            .values(body)
+            .returning()
+            .then((res) => res[0]);
+        },
+        {
+          // Validation par insertProjectSchema
+          body: insertProjectSchema,
+        },
+      ),
+  )
 
   .group("/matrix", (app) =>
     app
@@ -171,6 +206,7 @@ const app = new Elysia()
                 size: body.size,
                 xTitle: body.xTitle,
                 yTitle: body.yTitle,
+                projectId: body.projectId,
               })
 
               // renvoie l'objet template (on sait que c réussi)
@@ -194,8 +230,8 @@ const app = new Elysia()
               .returning();
 
             // création dictionnaire - trouver l'index (O(1))
-            const riskLevelMap = new Map(
-              body.riskLevels.map((rl, index) => [rl.id, index]),
+            const riskLevelMap = new Map<string, number>(
+              body.riskLevels.map((rl, index) => [String(rl.id), index]),
             );
 
             // transforme en tableau
@@ -205,7 +241,7 @@ const app = new Elysia()
                 const [x, y] = parseCellKey(key);
 
                 // (avant: findIndex - trop d'opérations) trouve index risque pour chaque cellule
-                const typeIndex = riskLevelMap.get(levelId);
+                const typeIndex = riskLevelMap.get(String(levelId));
 
                 // si l'id existe pas (dans le dictionnaire)
                 if (typeIndex === undefined) {
@@ -236,20 +272,7 @@ const app = new Elysia()
         },
         // schema validation (t = TypeBox - natif a Elysia)
         {
-          body: t.Object({
-            name: t.String(),
-            size: t.Number(),
-            xTitle: t.String(),
-            yTitle: t.String(),
-            riskLevels: t.Array(
-              t.Object({
-                id: t.String(),
-                label: t.String(),
-                color: t.String(),
-              }),
-            ),
-            matrixData: t.Record(t.String(), t.String()),
-          }),
+          body: insertMatrixSchema,
         },
       )
 
@@ -309,10 +332,9 @@ const app = new Elysia()
               )
               .returning();
 
-            const riskLevelMap = new Map(
-              body.riskLevels.map((rl, index) => [rl.id, index]),
+            const riskLevelMap = new Map<string, number>(
+              body.riskLevels.map((rl, index) => [String(rl.id), index]),
             );
-
             // transforme en tableau
             const cellsToInsert = Object.entries(body.matrixData).map(
               ([key, levelId]) => {
@@ -348,22 +370,7 @@ const app = new Elysia()
         {
           // validation schema
           params: t.Object({ id: t.String() }),
-          body: t.Object({
-            name: t.String(),
-            size: t.Number(),
-            xTitle: t.String(),
-            yTitle: t.String(),
-            riskLevels: t.Array(
-              t.Object({
-                id: t.String(),
-                label: t.String(),
-                color: t.String(),
-              }),
-            ),
-
-            // Record = object clé valeur, sert comme dictionnaire (si on ne connait pas les clés a l'avance)
-            matrixData: t.Record(t.String(), t.String()),
-          }),
+          body: updateMatrixSchema,
         },
       ),
   )
