@@ -445,7 +445,11 @@ function MatrixEditorComponent() {
                           setRiskLevels([
                             ...riskLevels,
                             {
-                              id: Date.now(),
+                              id:
+                                Math.min(
+                                  0,
+                                  ...riskLevels.map((rl) => Number(rl.id)),
+                                ) - 1,
                               label: input.value,
                               color: newLevelColor,
                               icon: LucideIcons.CircleDashed,

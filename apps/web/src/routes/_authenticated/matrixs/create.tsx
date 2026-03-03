@@ -150,7 +150,7 @@ function CreateMatrixComponent() {
       DEFAULT_TEMPLATES[0];
 
     const currentPayload = {
-      projectId: selectedProjectId as number,
+      projectId: selectedProjectId,
       name: matrixName,
       size: size,
       xTitle: xAxisTitle,
@@ -191,7 +191,7 @@ function CreateMatrixComponent() {
       DEFAULT_TEMPLATES[0];
 
     const payload = {
-      projectId: selectedProjectId as number,
+      projectId: selectedProjectId,
       name: matrixName,
       size: size,
       xTitle: xAxisTitle,
